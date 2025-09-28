@@ -1104,7 +1104,7 @@ if page == "Météo":
                 wind_ms = 0.0
 
             wind_kmh = int(round(wind_ms * 3.6))
-            st.metric("Vent", f"{wind_kmh} km/h")
+            st.metric("🌬️ Vent", f"{wind_kmh} km/h")
 
 
         # 📝 Conditions
