@@ -1086,15 +1086,26 @@ if page == "Météo":
         with col2:  
             st.metric("💧 Humidité", f"{now['main']['humidity']} %")
 
-        # 🌬️ Vent
+        # 🌬️ Vent (affiché en km/h, robuste aux structures différentes)
         with col3:
+            wind_ms = None
             try:
-                wind_ms = float(now.get("wind_speed", now.get("wind", 0)))
+                if isinstance(now, dict):
+                    if "wind_speed" in now:                          # One Call: m/s
+                        wind_ms = float(now["wind_speed"])
+                    elif isinstance(now.get("wind"), dict) and "speed" in now["wind"]:  # current weather
+                        wind_ms = float(now["wind"]["speed"])
+                    elif "speed" in now:                              # autre format rare
+                        wind_ms = float(now["speed"])
             except Exception:
+                wind_ms = None
+
+            if wind_ms is None:
                 wind_ms = 0.0
 
             wind_kmh = int(round(wind_ms * 3.6))
             st.metric("Vent", f"{wind_kmh} km/h")
+
 
         # 📝 Conditions
         desc = (now.get("weather", [{}])[0].get("description", "") or "—").capitalize()
