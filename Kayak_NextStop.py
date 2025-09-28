@@ -29,7 +29,7 @@ def render_header(
     logo_path="assets/Logo_Kayak_NextStop.png",
     slogan="Quand météo et envie décident de votre prochaine destination.",
     logo_width=700,   # ← augmente la taille du logo (essaie 650–740 si besoin)
-    slogan_px=32      # ← 30–35 px
+    slogan_px=34      # ← 30–35 px
 ):
     p = pathlib.Path(logo_path)
     left_pad, mid, right_pad = st.columns([1, 8, 1])  # centre le contenu
@@ -389,7 +389,7 @@ if page == "Météo":
         def img_b64(path): 
             return base64.b64encode(pathlib.Path(path).read_bytes()).decode()
 
-        LOGO64 = img_b64("assets/favicon_Kayak_NextStop.png")
+        LOGO64 = img_b64("assets/Favicon_Kayak_NextStop.png")
 
         st.markdown(
             f"""
