@@ -1087,12 +1087,13 @@ if page == "Météo":
             st.metric("💧 Humidité", f"{now['main']['humidity']} %")
 
         # 🌬️ Vent
-        wind = now.get("wind", {}).get("speed", None)
-        with col3:
-            if wind is not None:
-                st.metric("🌬️ Vent", f"{wind:.1f} m/s")
-            else:
-                st.metric("🌬️ Vent", "—")
+        try:
+            wind_ms = float(now.get("wind_speed", now.get("wind", 0)))
+        except Exception:
+            wind_ms = 0.0
+
+        wind_kmh = int(round(wind_ms * 3.6))
+        st.metric("Vent", f"{wind_kmh} km/h")
 
         # 📝 Conditions
         desc = (now.get("weather", [{}])[0].get("description", "") or "—").capitalize()
