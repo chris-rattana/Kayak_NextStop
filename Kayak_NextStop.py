@@ -1117,20 +1117,25 @@ if page == "Météo":
 
     # === Prévisions 24h (table) ===
     with st.expander(f"⏱️ Prévisions météo (24 heures) à {city}", expanded=False):
-
         try:
             # Prochaines 24h → 8 pas (3h)
             # Référence temps locale (naïve) pour filtrer les prochaines 24h
             now_local = pd.Timestamp.utcnow().tz_localize(None) + tz_delta
             next_24h = df_fc[df_fc["dt_local"] > now_local].head(8).copy()
 
-            tbl24 = next_24h[["dt_local","desc","temp","feels","rain_mm","wind"]].rename(columns={
+            # Conversion vent m/s -> km/h (arrondi entier)
+            if "wind" in next_24h.columns:
+                next_24h["wind_kmh"] = (next_24h["wind"].astype(float) * 3.6).round().astype(int)
+            else:
+                next_24h["wind_kmh"] = np.nan  # garde la colonne si jamais absente
+    
+            tbl24 = next_24h[["dt_local", "desc", "temp", "feels", "rain_mm", "wind_kmh"]].rename(columns={
                 "dt_local": "Heure",
                 "desc": "Conditions",
                 "temp": "Temp (°C)",
                 "feels": "Ressenti (°C)",
                 "rain_mm": "Pluie (mm/3h)",
-                "wind": "Vent (m/s)"
+                "wind_kmh": "Vent (km/h)"
             })
 
             # Format FR pour l’heure (abréviations FR)
@@ -1139,9 +1144,9 @@ if page == "Météo":
             tbl24["Heure"] = tmp.apply(lambda s: f"{abbr_map.get(s.split()[0], s.split()[0])} {s.split()[1]}")
 
             st.dataframe(tbl24.reset_index(drop=True), use_container_width=True)
-
         except Exception as e:
-            st.info(f"Tableau 24h non disponible : {e}")
+            st.info(f"Prévisions non affichées : {e}")
+
 
     # === Titre 5 jours (les graphes existants viennent ensuite) ===
     with st.expander(f"📅 Prévisions météo (5 jours) à {city}", expanded=False):
